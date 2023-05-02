@@ -1,5 +1,4 @@
 <script>
-  /** @type {import('./$types').PageData} */
   let searchInput = "";
   let searchResults = [];
 

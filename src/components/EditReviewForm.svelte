@@ -1,17 +1,20 @@
 <script>
     import { db } from "../lib/firebase";
     import { createEventDispatcher } from "svelte";
-    import { collection, doc, setDoc } from "firebase/firestore";
+    import { collection, doc, updateDoc } from "firebase/firestore";
   
     export let albumId = "";
     export let userId = "";
     export let existingReview;
+    export let documentId;
   
     let review = {
       title: existingReview.title,
       content: existingReview.content,
       rating: existingReview.rating,
     };
+
+    console.log(existingReview)
     const dispatch = createEventDispatcher();
   
     function close() {
@@ -29,8 +32,8 @@
       }
   
       try {
-        const reviewDoc = doc(db, "reviews", existingReview.id);
-        await setDoc(reviewDoc, {
+        const reviewDoc = doc(db, "reviews", documentId);
+        await updateDoc(reviewDoc, {
           title: review.title,
           content: review.content,
           rating: review.rating,

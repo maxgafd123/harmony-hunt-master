@@ -43,7 +43,11 @@ const querySnapshot = await getDocs(q);
 
 const reviews = [];
 querySnapshot.forEach((doc) => {
-  reviews.push(doc.data());
+  
+  reviews.push({
+    id: doc.id,
+    ...doc.data()
+  });
 })
 
     return {

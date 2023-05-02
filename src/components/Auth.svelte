@@ -12,9 +12,6 @@ authStore.subscribe((state) => {
   error = state.error;
 });
 
-function clearError() {
-  authStore.update((state) => ({ ...state, error: null}));
-}
 
 async function handleSubmit () {
     if(!email || !password || (register && !confirmPassword)) {

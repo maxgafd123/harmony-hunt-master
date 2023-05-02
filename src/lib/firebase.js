@@ -1,7 +1,6 @@
 import { deleteApp, getApp, getApps, initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth, setPersistence, inMemoryPersistence } from 'firebase/auth'
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getAuth } from 'firebase/auth'
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAwaHkL4Qai2wjl7jrGmQOwR_s7pGV3PoI',

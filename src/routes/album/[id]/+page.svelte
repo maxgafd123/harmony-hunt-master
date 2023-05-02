@@ -23,7 +23,6 @@
   $: userReview = $authStore.currentUser
     ? reviews.find((review) => review.userId === $authStore.currentUser.uid)
     : null;
-
   function getCopyrightSymbol(string) {
     switch (string) {
       case "C":
@@ -47,6 +46,7 @@
     albumId={album.id}
     userId={$authStore.currentUser.uid}
     existingReview={userReview}
+    documentId={userReview.id}
     on:close={() => (showEditReviewForm = false)}
   />
 {/if}
