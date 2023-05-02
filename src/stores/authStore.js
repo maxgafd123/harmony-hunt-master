@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, updateEmail, updatePassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, updateEmail, updatePassword, signOut } from "firebase/auth";
 import { writable } from "svelte/store";
 import { auth } from "../lib/firebase";
 

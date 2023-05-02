@@ -1,58 +1,58 @@
 <script>
     import { db } from "../lib/firebase";
-    import {createEventDispatcher} from 'svelte';
-    import { addDoc, collection } from "firebase/firestore"
+    import { createEventDispatcher } from "svelte";
+    import { collection, doc, setDoc } from "firebase/firestore";
   
     export let albumId = "";
     export let userId = "";
+    export let existingReview;
   
     let review = {
-        title: '',
-        content: '',
-        rating: 1,
+      title: existingReview.title,
+      content: existingReview.content,
+      rating: existingReview.rating,
     };
     const dispatch = createEventDispatcher();
-
-    function close () {
-        dispatch('close');
+  
+    function close() {
+      dispatch("close");
     }
-
+  
     function setRating(newRating) {
-        review.rating = newRating;
+      review.rating = newRating;
     }
   
     async function submitReview() {
-  if (review.title.trim() === "" || review.content.trim() === "") {
-    alert("Please enter a title and review content.");
-    return;
-  }
-
-  try {
-    const reviewsCollection = collection(db, "reviews")
-    await addDoc(reviewsCollection, {
-      albumId,
-      userId,
-      title: review.title,
-      content: review.content,
-      rating: review.rating,
-      createdAt: new Date(),
-    });
-
-    alert("Review submitted!");
-    review = {
-      title: '',
-      content: '',
-      rating: 1,
-    };
-    close();
-  } catch (error) {
-    console.error("Error submitting review:", error);
-    alert("An error occurred. Please try again.");
-  }
-}
+      if (review.title.trim() === "" || review.content.trim() === "") {
+        alert("Please enter a title and review content.");
+        return;
+      }
+  
+      try {
+        const reviewDoc = doc(db, "reviews", existingReview.id);
+        await setDoc(reviewDoc, {
+          title: review.title,
+          content: review.content,
+          rating: review.rating,
+          updatedAt: new Date(),
+        });
+  
+        alert("Review updated!");
+        review = {
+          title: "",
+          content: "",
+          rating: 1,
+        };
+        close();
+      } catch (error) {
+        console.error("Error updating review:", error);
+        alert("An error occurred. Please try again.");
+      }
+    }
   </script>
   
-  <div
+
+<div
   class="fixed inset-0 z-50 flex items-center justify-center"
   style="background-color: rgba(0, 0, 0, 0.5);"
 >
@@ -60,7 +60,7 @@
     class="bg-white w-full max-w-lg p-6 rounded shadow"
     on:submit|preventDefault={submitReview}
   >
-    <h2 class="text-2xl font-bold mb-4">Submit a Review</h2>
+    <h2 class="text-2xl font-bold mb-4">Edit Review</h2>
     <div class="mb-4">
       <label class="block mb-2">Title</label>
       <input
@@ -76,7 +76,7 @@
         class="border border-gray-300 w-full p-2 rounded h-32"
         bind:value={review.content}
         required
-      ></textarea>
+      />
     </div>
     <div class="mb-4">
       <label class="block mb-2">Rating</label>
@@ -87,7 +87,7 @@
             class="text-yellow-400 text-2xl"
             on:click={() => setRating(star)}
           >
-            {star <= review.rating ? '★' : '☆'}
+            {star <= review.rating ? "★" : "☆"}
           </button>
         {/each}
       </div>
@@ -100,10 +100,7 @@
       >
         Cancel
       </button>
-      <button
-        type="submit"
-        class="bg-blue-600 text-white px-4 py-2 rounded"
-      >
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
         Submit
       </button>
     </div>
