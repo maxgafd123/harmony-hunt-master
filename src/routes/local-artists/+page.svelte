@@ -1,0 +1,1 @@
+<h1>This is the local artists page</h1>
