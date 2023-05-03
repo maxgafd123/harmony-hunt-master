@@ -16,11 +16,11 @@
         <div class="ml-4">
           <h2 class="text-lg font-semibold mb-1">{album.name}</h2>
           <p class="text-gray-600 mb-1">{album.artists[0].name}</p>
-          {#if album.listeners !== null && album.playcount !== null}
-            <p class="text-gray-600">Listeners: {album.listeners.toLocaleString()} Playcount: {album.playcount.toLocaleString()}</p>
-          {:else}
-            <p class="text-gray-600">Listeners: N/A, Playcount: N/A</p>
-          {/if}
+          {#if album.listeners !== null && album.playcount !== null && album.listeners && album.playcount}
+          <p class="text-gray-600">Listeners: {album.listeners.toLocaleString()} Playcount: {album.playcount.toLocaleString()}</p>
+        {:else}
+          <p class="text-gray-600">Listeners: N/A, Playcount: N/A</p>
+        {/if}
         </div>
       </div>
     </a>
