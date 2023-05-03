@@ -9,6 +9,7 @@
 
   $: album = data.album;
   $: reviews = data.reviews;
+  $: genre = data.genres;
 
   $: averageRating =
     reviews.length > 0
@@ -23,6 +24,16 @@
   $: userReview = $authStore.currentUser
     ? reviews.find((review) => review.userId === $authStore.currentUser.uid)
     : null;
+
+  $: totalDuration = album.tracks.items.reduce(
+    (sum, track) => sum + track.duration_ms,
+    0
+  );
+
+  $: hasExplicitTracks = album.tracks.items.some((track) => track.explicit);
+
+  $: spotifyUrl = album.external_urls.spotify;
+
   function getCopyrightSymbol(string) {
     switch (string) {
       case "C":
@@ -33,10 +44,24 @@
         return "℗";
     }
   }
+
+  function formatGenres(genre) {
+    return genre
+      .map((genre) =>
+        genre
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ")
+      )
+      .join(", ");
+  }
 </script>
+
 {#if showReviewForm}
   <ReviewForm
     albumId={album.id}
+    albumName={album.name}
+    albumImageUrl={album.images[1].url}
     userId={$authStore.currentUser.uid}
     on:close={() => (showReviewForm = false)}
   />
@@ -55,6 +80,7 @@
     <div class="flex items-start justify-between mb-8">
       <div>
         <h1 class="text-4xl font-bold">{album.name}</h1>
+        <h4 class="text-3xl font-bold">{album.artists[0].name}</h4>
         <img src={album.images[1].url} alt="Album cover" class="mt-4 mb-8" />
       </div>
       <div class="flex flex-col justify-between">
@@ -62,11 +88,11 @@
           <div>
             <p class="text-lg">Number of ratings: {numberOfRatings}</p>
           </div>
-          <div class="border-r h-8"></div>
+          <div class="border-r h-8" />
           <div>
             <p class="text-lg">Average rating: {averageRating}</p>
           </div>
-          <div class="border-r h-8"></div>
+          <div class="border-r h-8" />
           {#if $authStore.currentUser && userReview}
             <div>
               <p class="text-lg">Your rating: {userReview.rating}/5</p>
@@ -75,13 +101,17 @@
         </div>
         {#if $authStore.currentUser}
           {#if userReview}
-            <button type="button" class="bg-blue-600 text-white px-4 py-2 rounded w-full" on:click={() => (showEditReviewForm = true)}>
+            <button
+              type="button"
+              class="bg-blue-600 text-white px-4 py-2 rounded w-full mb-4"
+              on:click={() => (showEditReviewForm = true)}
+            >
               Edit Review
             </button>
           {:else}
             <button
               type="button"
-              class="bg-blue-600 text-white px-4 py-2 rounded w-full"
+              class="bg-blue-600 text-white px-4 py-2 rounded w-full mb-4"
               on:click={() => (showReviewForm = true)}
             >
               Submit a Review
@@ -90,15 +120,23 @@
         {:else}
           <a
             href="/login"
-            class="bg-blue-600 text-white px-4 py-2 rounded inline-block w-full"
+            class="bg-blue-600 text-white px-4 py-2 rounded inline-block w-full mb-4"
           >
             Login to Submit a Review
           </a>
         {/if}
+        <a
+          href={spotifyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="bg-green-600 text-white px-4 py-2 rounded inline-block w-full text-center"
+        >
+          Listen on Spotify
+        </a>
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div class="bg-white p-4 rounded shadow">
+      <div class="bg-gray-200 p-4 rounded shadow">
         <h2 class="text-2xl font-semibold mb-4">Tracklist</h2>
         <ol class="list-decimal list-inside">
           {#each album.tracks.items as track}
@@ -106,17 +144,28 @@
           {/each}
         </ol>
       </div>
-      <div>
-        <p class="text-lg mb-4">
-          {new Date(album.release_date).toLocaleDateString("en", {
-            dateStyle: "medium",
-          })}
-        </p>
-        {#each album.copyrights as copyright}
-          <p class="text-sm mb-2">
-            {getCopyrightSymbol(copyright.type)}{copyright.text}
+      <div class="pl-8">
+        <div class="bg-gray-200 rounded p-4">
+          <h2 class="text-2xl font-semibold mb-4">Album Information</h2>
+          <p class="text-lg mb-4">
+            Release date:
+            {new Date(album.release_date).toLocaleDateString("en", {
+              dateStyle: "medium",
+            })}
           </p>
-        {/each}
+          <p class="text-lg mb-4">Genres: {formatGenres(genre)}</p>
+          <p class="text-lg mb-4">
+            Duration: {Math.floor(totalDuration / 60000)} minutes
+          </p>
+          <p class="text-lg mb-4">
+            Explicit Lyrics: {hasExplicitTracks ? "Yes" : "No"}
+          </p>
+          {#each album.copyrights as copyright}
+            <p class="text-sm mb-2">
+              {getCopyrightSymbol(copyright.type)}{copyright.text}
+            </p>
+          {/each}
+        </div>
       </div>
     </div>
   </div>

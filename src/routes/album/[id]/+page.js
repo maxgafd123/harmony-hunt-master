@@ -1,7 +1,7 @@
 import { db } from "../../../lib/firebase"
 import {collection, query, where, getDocs} from "firebase/firestore"
 export async function load ({fetch, params}) {
-    const clientAccess = "M2IyMDk4ODkxZjY4NGZkMWI3ZmNmOTg2MDQ5YTU4MTg6NTgzMThjYTlhN2E3NDI2M2E2OTU1YjlhN2I3NTRhNzg=";
+  const clientAccess = "M2IyMDk4ODkxZjY4NGZkMWI3ZmNmOTg2MDQ5YTU4MTg6NTgzMThjYTlhN2E3NDI2M2E2OTU1YjlhN2I3NTRhNzg=";
 
       // Get an access token from Spotify
   const authResponse = await fetch("https://accounts.spotify.com/api/token", {
@@ -34,7 +34,22 @@ export async function load ({fetch, params}) {
     const albumJSON = await albumRes.json();
     console.log(albumJSON);
 
+    const artistId = albumJSON.artists[0].id
 
+    let artistGenres = [];
+
+    if (artistId) {
+      const artistRes = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      if (artistRes.ok) {
+        const artistJSON = await artistRes.json();
+        artistGenres = artistJSON.genres;
+      }
+    }
 //Fetch review data from Firebase on album
 
 const reviewsCollection = collection(db, "reviews");
@@ -53,6 +68,7 @@ querySnapshot.forEach((doc) => {
     return {
         album: albumJSON,
         reviews,
-        title: albumJSON.name
+        title: albumJSON.name,
+        genres: artistGenres
     }
 }

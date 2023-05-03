@@ -5,6 +5,8 @@
   
     export let albumId = "";
     export let userId = "";
+    export let albumName = "";
+    export let albumImageUrl = "";
   
     let review = {
         title: '',
@@ -32,6 +34,8 @@
     await addDoc(reviewsCollection, {
       albumId,
       userId,
+      albumName,
+      albumImageUrl,
       title: review.title,
       content: review.content,
       rating: review.rating,
