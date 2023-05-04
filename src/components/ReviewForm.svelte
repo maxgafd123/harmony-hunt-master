@@ -41,6 +41,7 @@
       rating: review.rating,
       createdAt: new Date(),
     });
+    
 
     alert("Review submitted!");
     review = {
@@ -49,6 +50,8 @@
       rating: 1,
     };
     close();
+
+  
   } catch (error) {
     console.error("Error submitting review:", error);
     alert("An error occurred. Please try again.");

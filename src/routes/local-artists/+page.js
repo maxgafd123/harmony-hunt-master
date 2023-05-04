@@ -24,7 +24,8 @@ async function fetchEventsByLocation(fetch, location) {
   const searchParams = new URLSearchParams({
     apikey: TICKETMASTER_API_KEY,
     city: location,
-    size: 10,
+    classificationName: "Music",
+    size: 12,
   }).toString();
 
   const response = await fetch(

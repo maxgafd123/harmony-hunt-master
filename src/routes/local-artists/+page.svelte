@@ -1,13 +1,15 @@
 <script>
     export let data
 
+    $: title = data.title
     $: events = data.events
+
 
     
 </script>
-<h1>This is the local artists page</h1>
 
 
+<h1 class="text-3xl font-bold mb-4">{title}</h1>
 {#if events && events.length > 0}
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     {#each events as event}
@@ -31,6 +33,9 @@
         {#if event._embedded && event._embedded.venues}
           <p class="text-sm">Venue: {event._embedded.venues[0].name}</p>
         {/if}
+        {#if event.classifications && event.classifications[0].genre}
+        <p>Genres: {event.classifications[0].genre.name}</p>
+      {/if}
       </a>
     {/each}
   </div>
