@@ -1,11 +1,12 @@
 <script>
     import { authStore } from "../../stores/authStore"
-    import { collection, query, where, orderBy, limit, onSnapshot} from "firebase/firestore"
+    import { collection, query, where, orderBy, limit, onSnapshot, getDoc, getDocs} from "firebase/firestore"
     import { db } from "../../lib/firebase"
 
     let user;
     let recentReviews = [];
     let unsubscribe;
+    let username;
 
 authStore.subscribe(async ($authStore) => {
     user = $authStore.currentUser;
@@ -14,6 +15,16 @@ authStore.subscribe(async ($authStore) => {
     }
 
     if (user) {
+
+       const userDocsQuery = query(
+        collection(db, "users"),
+        where("uid", "==", user.uid)
+       );
+
+       const querySnapshot = await getDocs(userDocsQuery);
+       querySnapshot.forEach((doc) => {
+        username = doc.data().username
+       })
         const userReviewsQuery = query(
             collection(db, "reviews"),
             where("userId", "==", $authStore.currentUser.uid),
@@ -38,7 +49,7 @@ authStore.subscribe(async ($authStore) => {
 
 <main class="container mx-auto mt-10 px-4">
   {#if user}
-      <h1 class="text-3xl font-bold mb-4">Welcome, {user.email}!</h1>
+      <h1 class="text-3xl font-bold mb-4">Welcome, {username}!</h1>
       <section>
           <h2 class="text-2xl font-semibold mb-4">Recent Reviews</h2>
           {#if recentReviews.length > 0}

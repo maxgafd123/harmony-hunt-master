@@ -1,6 +1,9 @@
 import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, updateEmail, updatePassword, signOut } from "firebase/auth";
 import { writable } from "svelte/store";
 import { auth } from "../lib/firebase";
+import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+
+const firestore = getFirestore();
 
 export const authStore = writable({
     isLoading: true,
@@ -18,9 +21,15 @@ export const authHandlers = {
         }
         
     },
-    signup: async (email, password) => {
+    signup: async (email, password, username) => {
         try {
-            await createUserWithEmailAndPassword(auth, email, password)
+           const userCredential =  await createUserWithEmailAndPassword(auth, email, password)
+           const user = userCredential.user;
+
+           await setDoc(doc(collection(firestore, 'users')), {
+            uid: user.uid,
+            username: username,
+           })
         } catch (err) {
             authStore.update((state) => ({ ...state, error: err.message}));
             throw err;

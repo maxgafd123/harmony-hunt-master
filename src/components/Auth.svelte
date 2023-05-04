@@ -4,6 +4,7 @@
 
 let register = true;
 let error;
+let username = '';
 let email = '';
 let password = '';
 let confirmPassword = '';
@@ -20,7 +21,7 @@ async function handleSubmit () {
 
     if (register && password === confirmPassword) {
         try {
-            await authHandlers.signup(email, password);
+            await authHandlers.signup(email, password, username);
         } catch (err) {
             console.log(err)
         }
@@ -46,6 +47,12 @@ onDestroy (() => {
 <main class="flex justify-center items-center h-screen">
     <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-md">
       <h1 class="text-3xl font-bold mb-4 text-center">Sign Up</h1>
+      <div class="mb-6">
+        <label class="block text-gray-700 font-bold mb-2" for="username">
+          Username
+        </label>
+        <input bind:value={username} class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Enter your username" />
+      </div>
       <div class="mb-6">
         <label class="block text-gray-700 font-bold mb-2" for="email">
           Email
