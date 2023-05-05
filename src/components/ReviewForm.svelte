@@ -40,6 +40,7 @@
       content: review.content,
       rating: review.rating,
       createdAt: new Date(),
+      likes: [],
     });
     
 
@@ -49,7 +50,7 @@
       content: '',
       rating: 1,
     };
-    close();
+    location.reload();
 
   
   } catch (error) {
