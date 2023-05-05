@@ -160,8 +160,8 @@
             {/each}
           </ol>
         </div>
-        <div class="pl-8">
-          <div class="bg-gray-200 rounded p-4">
+        <div class="md:pl-8">
+          <div class="bg-gray-200 rounded p-4 md:p-4">
             <h2 class="text-2xl font-semibold mb-4">Album Information</h2>
             <p class="text-lg mb-4">
               Release date:
