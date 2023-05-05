@@ -48,7 +48,7 @@
           content: "",
           rating: 1,
         };
-        close();
+        location.reload()
       } catch (error) {
         console.error("Error updating review:", error);
         alert("An error occurred. Please try again.");

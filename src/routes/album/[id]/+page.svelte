@@ -6,6 +6,7 @@
 
   let showReviewForm = false;
   let showEditReviewForm = false;
+  let activeTab = "info";
 
   $: album = data.album;
   $: reviews = data.reviews;
@@ -135,38 +136,74 @@
         </a>
       </div>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div class="bg-gray-200 p-4 rounded shadow">
-        <h2 class="text-2xl font-semibold mb-4">Tracklist</h2>
-        <ol class="list-decimal list-inside">
-          {#each album.tracks.items as track}
-            <li class="text-lg">{track.name}</li>
-          {/each}
-        </ol>
-      </div>
-      <div class="pl-8">
-        <div class="bg-gray-200 rounded p-4">
-          <h2 class="text-2xl font-semibold mb-4">Album Information</h2>
-          <p class="text-lg mb-4">
-            Release date:
-            {new Date(album.release_date).toLocaleDateString("en", {
-              dateStyle: "medium",
-            })}
-          </p>
-          <p class="text-lg mb-4">Genres: {formatGenres(genre)}</p>
-          <p class="text-lg mb-4">
-            Duration: {Math.floor(totalDuration / 60000)} minutes
-          </p>
-          <p class="text-lg mb-4">
-            Explicit Lyrics: {hasExplicitTracks ? "Yes" : "No"}
-          </p>
-          {#each album.copyrights as copyright}
-            <p class="text-sm mb-2">
-              {getCopyrightSymbol(copyright.type)}{copyright.text}
+    <div class="mb-4">
+      <button
+        class={`${activeTab === 'info' ? 'bg-blue-600 text-white' : 'bg-gray-200'} px-4 py-2 rounded-tl-lg rounded-tr-lg`}
+        on:click={() => (activeTab = 'info')}
+      >
+        Album Information
+      </button>
+      <button
+        class={`${activeTab === 'reviews' ? 'bg-blue-600 text-white' : 'bg-gray-200'} px-4 py-2 rounded-tl-lg rounded-tr-lg`}
+        on:click={() => (activeTab = 'reviews')}
+      >
+        Reviews
+      </button>
+    </div>
+    {#if activeTab === 'info'}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-gray-200 p-4 rounded shadow">
+          <h2 class="text-2xl font-semibold mb-4">Tracklist</h2>
+          <ol class="list-decimal list-inside">
+            {#each album.tracks.items as track}
+              <li class="text-lg">{track.name}</li>
+            {/each}
+          </ol>
+        </div>
+        <div class="pl-8">
+          <div class="bg-gray-200 rounded p-4">
+            <h2 class="text-2xl font-semibold mb-4">Album Information</h2>
+            <p class="text-lg mb-4">
+              Release date:
+              {new Date(album.release_date).toLocaleDateString("en", {
+                dateStyle: "medium",
+              })}
             </p>
-          {/each}
+            <p class="text-lg mb-4">Genres: {formatGenres(genre)}</p>
+            <p class="text-lg mb-4">
+              Duration: {Math.floor(totalDuration / 60000)} minutes
+            </p>
+            <p class="text-lg mb-4">
+              Explicit Lyrics: {hasExplicitTracks ? "Yes" : "No"}
+            </p>
+            {#each album.copyrights as copyright}
+              <p class="text-sm mb-2">
+                {getCopyrightSymbol(copyright.type)}{copyright.text}
+              </p>
+            {/each}
+          </div>
         </div>
       </div>
+    {:else if activeTab === 'reviews'}
+    <div class="bg-gray-200 p-4 rounded shadow">
+      <h2 class="text-2xl font-semibold mb-4">Reviews</h2>
+      {#if reviews.length > 0}
+        <ul>
+          {#each reviews as review}
+            <li class="mb-6">
+              <div class="flex items-center mb-2">
+                <p class="text-lg font-bold">{review.title}: </p>
+                <p class="text-lg ml-2">{review.rating}/5</p>
+              </div>
+              <p class="text-lg">{review.content}</p>
+              <p class="text-sm text-gray-600">Reviewed by: {review.username}</p>
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <p class="text-lg">No reviews available for this album.</p>
+      {/if}
     </div>
-  </div>
+  {/if}
+</div>
 </div>
