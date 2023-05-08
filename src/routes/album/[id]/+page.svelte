@@ -2,7 +2,7 @@
   import ReviewForm from "../../../components/ReviewForm.svelte";
   import EditReviewForm from "../../../components/EditReviewForm.svelte";
   import { authStore } from "../../../stores/authStore";
-  import { doc, getDoc, updateDoc } from "firebase/firestore";
+  import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
   import { db } from "../../../lib/firebase";
   export let data;
 
@@ -13,7 +13,6 @@
   $: album = data.album;
   $: reviews = data.reviews;
   $: genre = data.genres;
-  
 
   $: averageRating =
     reviews.length > 0
@@ -74,19 +73,36 @@
         currentLikes[currentUserId] = true;
       }
 
-      await updateDoc(reviewDocRef, {likes: currentLikes});
+      await updateDoc(reviewDocRef, { likes: currentLikes });
 
-       // Find the review in the local reviews array and update its likes field
-    const reviewIndex = reviews.findIndex((r) => r.reviewId === review.reviewId);
-    if (reviewIndex !== -1) {
-      reviews[reviewIndex].likes = currentLikes;
+      // Find the review in the local reviews array and update its likes field
+      const reviewIndex = reviews.findIndex(
+        (r) => r.reviewId === review.reviewId
+      );
+      if (reviewIndex !== -1) {
+        reviews[reviewIndex].likes = currentLikes;
+      }
+
+      // Force Svelte to update the state by reassigning the reviews array
+      reviews = [...reviews];
     }
-
-    // Force Svelte to update the state by reassigning the reviews array
-    reviews = [...reviews];
   }
+
+  async function deleteReview(reviewId) {
+    const confirmDelete = confirm("Are you sure you want to delete this review?");
+    if (confirmDelete) {
+      try {
+        const reviewDocRef = doc(db, "reviews", reviewId);
+        await deleteDoc(reviewDocRef);
+        alert("Review deleted!");
+        location.reload();
+      } catch (error) {
+        console.error("Error deleting review:", error);
+        alert("An error occured. Please try again.")
+      }
     }
-  
+
+  }
 </script>
 
 {#if showReviewForm}
@@ -169,19 +185,23 @@
     </div>
     <div class="mb-4">
       <button
-        class={`${activeTab === 'info' ? 'bg-blue-600 text-white' : 'bg-gray-200'} px-4 py-2 rounded-tl-lg rounded-tr-lg`}
-        on:click={() => (activeTab = 'info')}
+        class={`${
+          activeTab === "info" ? "bg-blue-600 text-white" : "bg-gray-200"
+        } px-4 py-2 rounded-tl-lg rounded-tr-lg`}
+        on:click={() => (activeTab = "info")}
       >
         Album Information
       </button>
       <button
-        class={`${activeTab === 'reviews' ? 'bg-blue-600 text-white' : 'bg-gray-200'} px-4 py-2 rounded-tl-lg rounded-tr-lg`}
-        on:click={() => (activeTab = 'reviews')}
+        class={`${
+          activeTab === "reviews" ? "bg-blue-600 text-white" : "bg-gray-200"
+        } px-4 py-2 rounded-tl-lg rounded-tr-lg`}
+        on:click={() => (activeTab = "reviews")}
       >
         Reviews
       </button>
     </div>
-    {#if activeTab === 'info'}
+    {#if activeTab === "info"}
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="bg-gray-200 p-4 rounded shadow">
           <h2 class="text-2xl font-semibold mb-4">Tracklist</h2>
@@ -215,34 +235,52 @@
           </div>
         </div>
       </div>
-    {:else if activeTab === 'reviews'}
-    <div class="bg-gray-200 p-4 rounded shadow">
-      <h2 class="text-2xl font-semibold mb-4">Reviews</h2>
-      {#if reviews.length > 0}
-        <ul>
-          {#each reviews as review}
-            <li class="mb-6">
-              <div class="flex items-center mb-2">
-                <p class="text-lg font-bold">{review.title}: </p>
-                <p class="text-lg ml-2">{review.rating}/5</p>
-              </div>
-              <p class="text-lg">{review.content}</p>
-              <p class="text-sm text-gray-600">Reviewed by: {review.username}</p>
-              <button class="bg-blue-500 text-white px-4 py-2 rounded" on:click={() => toggleLikeReview(review)}>
-                {#if Object.keys(review.likes).includes($authStore.currentUser.uid)}
-                Unlike
-              {:else}
-                Like
-              {/if}
-              </button>
-              <span class="ml-2 text-lg">{Object.keys(review.likes).length} {Object.keys(review.likes).length === 1 ? 'Like' : 'Likes'}</span>
-            </li>
-          {/each}
-        </ul>
-      {:else}
-        <p class="text-lg">No reviews available for this album.</p>
-      {/if}
-    </div>
-  {/if}
-</div>
+    {:else if activeTab === "reviews"}
+      <div class="bg-gray-200 p-4 rounded shadow">
+        <h2 class="text-2xl font-semibold mb-4">Reviews</h2>
+        {#if reviews.length > 0}
+          <ul>
+            {#each reviews as review}
+              <li class="mb-6">
+                <div class="flex items-center mb-2">
+                  <p class="text-lg font-bold">{review.title}:</p>
+                  <p class="text-lg ml-2">{review.rating}/5</p>
+                </div>
+                <p class="text-lg">{review.content}</p>
+                <p class="text-sm text-gray-600">
+                  Reviewed by: {review.username}
+                </p>
+                {#if $authStore.currentUser && review.userId === $authStore.currentUser.uid}
+                  <button
+                    class="bg-red-500 text-white px-4 py-2 rounded"
+                    on:click={() => deleteReview(review.id)}
+                  >
+                    Delete
+                  </button>
+                {/if}
+                <button
+                  class="bg-blue-500 text-white px-4 py-2 rounded"
+                  on:click={() => toggleLikeReview(review)}
+                >
+                  {#if Object.keys(review.likes).includes($authStore.currentUser.uid)}
+                    Unlike
+                  {:else}
+                    Like
+                  {/if}
+                </button>
+                <span class="ml-2 text-lg"
+                  >{Object.keys(review.likes).length}
+                  {Object.keys(review.likes).length === 1
+                    ? "Like"
+                    : "Likes"}</span
+                >
+              </li>
+            {/each}
+          </ul>
+        {:else}
+          <p class="text-lg">No reviews available for this album.</p>
+        {/if}
+      </div>
+    {/if}
+  </div>
 </div>
