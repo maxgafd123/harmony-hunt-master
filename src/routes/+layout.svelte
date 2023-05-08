@@ -33,7 +33,7 @@
 </script>
 
 <!--Navigation bar, reponsive for mobile with mobileMenu-->
-
+<div class="flex flex-col min-h-screen">
 <nav class="bg-gray-800 py-4">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center">
     <div class="flex sm:items-center">
@@ -67,8 +67,9 @@
 {#if !$authStore.currentUser && !import.meta.env.SSR && window.location.pathname === '/privatedashboard'}
     <p>You must be logged in to access the private dashboard</p>
 {/if}
-
+<main class="flex-grow">
 <slot />
+</main>
 
 <footer class="bg-gray-800 text-white text-center p-4">
   <p>Powered by:</p>
@@ -88,3 +89,4 @@
     endorsed, certified, or otherwise approved by Ticketmaster, Spotify or Last.fm.
   </p>
 </footer>
+</div>
