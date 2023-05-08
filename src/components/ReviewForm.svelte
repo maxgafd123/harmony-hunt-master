@@ -1,7 +1,7 @@
 <script>
     import { db } from "../lib/firebase";
     import {createEventDispatcher} from 'svelte';
-    import { addDoc, collection } from "firebase/firestore"
+    import { addDoc, collection, updateDoc } from "firebase/firestore"
   
     export let albumId = "";
     export let userId = "";
@@ -30,8 +30,8 @@
   }
 
   try {
-    const reviewsCollection = collection(db, "reviews")
-    await addDoc(reviewsCollection, {
+    const reviewsCollection = collection(db, "reviews");
+    const reviewData = {
       albumId,
       userId,
       albumName,
@@ -40,9 +40,14 @@
       content: review.content,
       rating: review.rating,
       createdAt: new Date(),
-      likes: [],
-    });
-    
+      likes: {},
+    };
+
+    // Create the document and get the auto-generated ID
+    const docRef = await addDoc(reviewsCollection, reviewData);
+
+    // Update the created document with the reviewId field
+    await updateDoc(docRef, { reviewId: docRef.id });
 
     alert("Review submitted!");
     review = {
@@ -52,12 +57,16 @@
     };
     location.reload();
 
-  
   } catch (error) {
     console.error("Error submitting review:", error);
     alert("An error occurred. Please try again.");
   }
 }
+
+
+
+
+
   </script>
   
   <div

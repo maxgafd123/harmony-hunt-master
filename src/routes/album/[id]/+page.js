@@ -77,6 +77,7 @@ for (const doc of querySnapshot.docs) {
   reviews.push({
     id: doc.id,
     username: userData.username,
+    likes: reviewData.likes || [],
     ...reviewData,
   });
 }

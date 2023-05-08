@@ -2,6 +2,8 @@
   import ReviewForm from "../../../components/ReviewForm.svelte";
   import EditReviewForm from "../../../components/EditReviewForm.svelte";
   import { authStore } from "../../../stores/authStore";
+  import { doc, getDoc, updateDoc } from "firebase/firestore";
+  import { db } from "../../../lib/firebase";
   export let data;
 
   let showReviewForm = false;
@@ -11,6 +13,7 @@
   $: album = data.album;
   $: reviews = data.reviews;
   $: genre = data.genres;
+  
 
   $: averageRating =
     reviews.length > 0
@@ -56,6 +59,34 @@
       )
       .join(", ");
   }
+
+  async function toggleLikeReview(review) {
+    const reviewDocRef = doc(db, "reviews", review.id);
+    const reviewDocSnap = await getDoc(reviewDocRef);
+
+    if (reviewDocSnap.exists()) {
+      const currentLikes = reviewDocSnap.data().likes || {};
+      const currentUserId = $authStore.currentUser.uid;
+
+      if (currentLikes[currentUserId]) {
+        delete currentLikes[currentUserId];
+      } else {
+        currentLikes[currentUserId] = true;
+      }
+
+      await updateDoc(reviewDocRef, {likes: currentLikes});
+
+       // Find the review in the local reviews array and update its likes field
+    const reviewIndex = reviews.findIndex((r) => r.reviewId === review.reviewId);
+    if (reviewIndex !== -1) {
+      reviews[reviewIndex].likes = currentLikes;
+    }
+
+    // Force Svelte to update the state by reassigning the reviews array
+    reviews = [...reviews];
+  }
+    }
+  
 </script>
 
 {#if showReviewForm}
@@ -197,6 +228,14 @@
               </div>
               <p class="text-lg">{review.content}</p>
               <p class="text-sm text-gray-600">Reviewed by: {review.username}</p>
+              <button class="bg-blue-500 text-white px-4 py-2 rounded" on:click={() => toggleLikeReview(review)}>
+                {#if Object.keys(review.likes).includes($authStore.currentUser.uid)}
+                Unlike
+              {:else}
+                Like
+              {/if}
+              </button>
+              <span class="ml-2 text-lg">{Object.keys(review.likes).length} {Object.keys(review.likes).length === 1 ? 'Like' : 'Likes'}</span>
             </li>
           {/each}
         </ul>
