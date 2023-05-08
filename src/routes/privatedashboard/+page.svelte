@@ -1,12 +1,14 @@
 <script>
     import { authStore } from "../../stores/authStore"
-    import { collection, query, where, orderBy, limit, onSnapshot, doc, getDocs, deleteDoc} from "firebase/firestore"
+    import { collection, query, where, orderBy, limit, onSnapshot, doc, getDocs, deleteDoc, updateDoc} from "firebase/firestore"
     import { db } from "../../lib/firebase"
 
     let user;
     let recentReviews = [];
     let unsubscribe;
     let username;
+    let newUsername = "";
+    let isEditing = false;
 
 authStore.subscribe(async ($authStore) => {
     user = $authStore.currentUser;
@@ -44,6 +46,23 @@ authStore.subscribe(async ($authStore) => {
     }
 });
 
+async function saveUsername() {
+  const userDocsQuery = query(
+    collection(db, "users"),
+    where("uid", "==", user.uid)
+  );
+
+  const querySnapshot = await getDocs(userDocsQuery);
+  querySnapshot.forEach(async (docRef) => {
+    await updateDoc(doc(db, "users", docRef.id), {
+      username: newUsername,
+    });
+    username = newUsername;
+    newUsername = "";
+    isEditing = false;
+  });
+}
+
 async function deleteReview(reviewId) {
     const confirmDelete = confirm("Are you sure you want to delete this review?");
     if (confirmDelete) {
@@ -66,6 +85,36 @@ async function deleteReview(reviewId) {
 <main class="container mx-auto mt-10 px-4">
   {#if user}
       <h1 class="text-3xl font-bold mb-4">Welcome, {username}!</h1>
+      {#if isEditing}
+  <div class="mb-4">
+    <label for="newUsername" class="block text-sm mb-2">New username:</label>
+    <input
+      type="text"
+      id="newUsername"
+      bind:value={newUsername}
+      class="border border-gray-300 px-3 py-2 rounded"
+    />
+    <button
+      class="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+      on:click={saveUsername}
+    >
+      Save
+    </button>
+    <button
+      class="bg-gray-500 text-white px-4 py-2 rounded mt-2 ml-2"
+      on:click={() => (isEditing = false)}
+    >
+      Cancel
+    </button>
+  </div>
+{:else}
+  <button
+    class="bg-blue-500 text-white px-4 py-2 rounded mb-4"
+    on:click={() => (isEditing = true)}
+  >
+    Change username
+  </button>
+{/if}
       <section>
           <h2 class="text-2xl font-semibold mb-4">Recent Reviews</h2>
           {#if recentReviews.length > 0}
