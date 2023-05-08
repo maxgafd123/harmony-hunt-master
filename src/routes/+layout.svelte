@@ -70,3 +70,22 @@
 {/if}
 
 <slot />
+
+<footer class="bg-gray-800 text-white text-center p-4">
+  <p>Powered by:</p>
+  <div class="flex justify-center space-x-4">
+    <a href="https://www.ticketmaster.com/" target="_blank" rel="noopener noreferrer">
+      <img class="h-12 w-auto" src="/t_logo.png" alt="Powered by Ticketmaster" />
+    </a>
+    <a href="https://www.spotify.com/" target="_blank" rel="noopener noreferrer">
+      <img class="h-12 w-auto" src="/Spotify.png" alt="Powered by Spotify" />
+    </a>
+    <a href="https://www.last.fm/" target="_blank" rel="noopener noreferrer">
+      <img class="h-12 w-auto" src="/lastfm.png" alt="Powered by Last.fm" />
+    </a>
+  </div>
+  <p>
+    This product uses the Ticketmaster, Spotify and Last.fm APIs but is not
+    endorsed, certified, or otherwise approved by Ticketmaster, Spotify or Last.fm.
+  </p>
+</footer>
