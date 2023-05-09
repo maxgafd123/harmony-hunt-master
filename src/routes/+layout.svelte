@@ -5,16 +5,38 @@
     import {authStore} from '../stores/authStore'
     import { slide } from "svelte/transition"
     import AlbumSearch from "../components/AlbumSearch.svelte";
+    import LoadingIcon from "../components/LoadingIcon.svelte";
+    import { navigating } from "$app/stores";
+    let mobileMenu = false;
+    let loading = false;
 
-    onMount(() => {
-        let unsubscribe = auth.onAuthStateChanged((user) => {
-            authStore.update((curr) => {
-                return {...curr, isLoading: false, currentUser: user};
-            })
-        })
+    let navigatingUnsubscribe;
 
-        return unsubscribe;
-    })
+    export async function load({ session }) {
+    if (auth.currentUser) {
+      return { props: { user: auth.currentUser } };
+    }
+  }
+  onMount(() => {
+    let unsubscribe = auth.onAuthStateChanged((user) => {
+      authStore.update((curr) => {
+        return { ...curr, isLoading: false, currentUser: user };
+      });
+    });
+
+    navigatingUnsubscribe = navigating.subscribe((nav) => {
+      if (nav === null) {
+        loading = false;
+      } else {
+        loading = true;
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      navigatingUnsubscribe();
+    };
+  });
 
     function handleLogout() {
       auth.signOut()
@@ -25,10 +47,10 @@
           console.error(err);
         })
     }
+    
 
     
-    let mobileMenu = false;
-
+   
     
 </script>
 
@@ -67,9 +89,16 @@
 {#if !$authStore.currentUser && !import.meta.env.SSR && window.location.pathname === '/privatedashboard'}
     <p>You must be logged in to access the private dashboard</p>
 {/if}
+
 <main class="flex-grow">
+  {#if loading}
+  <div class="fixed inset-0 flex items-center justify-center">
+    <LoadingIcon size="w-8" color="text-blue-500" />
+  </div>
+{/if}
 <slot />
 </main>
+
 
 <footer class="bg-gray-800 text-white text-center p-4">
   <p>Powered by:</p>

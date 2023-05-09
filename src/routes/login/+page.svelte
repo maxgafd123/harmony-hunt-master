@@ -20,6 +20,19 @@
       }
     }
 
+    async function handleForgotPassword() {
+      const userEmail = prompt("Please enter your email address:");
+
+      if (userEmail) {
+        try {
+          await authHandlers.resetPassword(userEmail);
+          alert("Password reset email has been sent.");
+        } catch (error) {
+          alert("Error sending password reset email: " + error.message);
+        }
+      }
+    }
+
     function clearError() {
       authStore.update((state) => ({ ...state, error: null }));
     }
@@ -70,6 +83,9 @@
           <span class="text-gray-700 text-sm mb-2">Don't have an account?</span>
           <a class="text-blue-500 hover:text-blue-800 text-sm font-bold" href="/signup">
             Sign Up
+          </a>
+          <a class="text-blue-500 hover:text-blue-800 text-sm font-bold" on:click={handleForgotPassword}>
+            Forgot Password?
           </a>
         </div>
       </div>

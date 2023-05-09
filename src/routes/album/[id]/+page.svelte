@@ -1,6 +1,7 @@
 <script>
   import ReviewForm from "../../../components/ReviewForm.svelte";
   import EditReviewForm from "../../../components/EditReviewForm.svelte";
+  import AddList from "../../../components/AddList.svelte";
   import { authStore } from "../../../stores/authStore";
   import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
   import { db } from "../../../lib/firebase";
@@ -9,6 +10,7 @@
   let showReviewForm = false;
   let showEditReviewForm = false;
   let activeTab = "info";
+  let showAddListModal = false;
 
   $: album = data.album;
   $: reviews = data.reviews;
@@ -89,7 +91,9 @@
   }
 
   async function deleteReview(reviewId) {
-    const confirmDelete = confirm("Are you sure you want to delete this review?");
+    const confirmDelete = confirm(
+      "Are you sure you want to delete this review?"
+    );
     if (confirmDelete) {
       try {
         const reviewDocRef = doc(db, "reviews", reviewId);
@@ -98,10 +102,9 @@
         location.reload();
       } catch (error) {
         console.error("Error deleting review:", error);
-        alert("An error occured. Please try again.")
+        alert("An error occured. Please try again.");
       }
     }
-
   }
 </script>
 
@@ -177,10 +180,23 @@
           href={spotifyUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="bg-green-600 text-white px-4 py-2 rounded inline-block w-full text-center"
+          class="bg-green-600 text-white px-4 py-2 rounded inline-block w-full text-center mb-4"
         >
           Listen on Spotify
         </a>
+        {#if $authStore.currentUser}
+          <button
+            type="button"
+            class="bg-blue-600 text-white px-4 py-2 rounded w-full mb-4"
+            on:click={() => (showAddListModal = true)}
+          >
+            Add to list
+          </button>
+        {/if}
+
+        {#if showAddListModal}
+          <AddList {album} on:close={() => (showAddListModal = false)} />
+        {/if}
       </div>
     </div>
     <div class="mb-4">
@@ -227,6 +243,7 @@
             <p class="text-lg mb-4">
               Explicit Lyrics: {hasExplicitTracks ? "Yes" : "No"}
             </p>
+            <h2 class="text-2xl font-semibold mb-4">Copyright Information</h2>
             {#each album.copyrights as copyright}
               <p class="text-sm mb-2">
                 {getCopyrightSymbol(copyright.type)}{copyright.text}
