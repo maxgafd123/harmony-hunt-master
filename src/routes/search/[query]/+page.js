@@ -32,6 +32,7 @@ function filterDuplicates(albums) {
 export async function load({ fetch, params, route }) {
   const clientAccess = "M2IyMDk4ODkxZjY4NGZkMWI3ZmNmOTg2MDQ5YTU4MTg6NTgzMThjYTlhN2E3NDI2M2E2OTU1YjlhN2I3NTRhNzg=";
   const query = params?.query;
+  console.log("Query", query)
   const searchParams = new URLSearchParams({
     q: query,
     type: "album",

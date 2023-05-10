@@ -22,17 +22,20 @@
     });
   </script>
   
-  <h1 class="text-2xl font-bold mb-4">Your Lists</h1>
+  
   
   {#if $authStore.currentUser}
     {#if userLists.length === 0}
     <p>You don't have any lists yet.</p>
     {:else}
+    <div class="mx-auto px-4 max-2-4xl">
+    <h1 class="text-2xl font-bold mb-4">Your Lists</h1>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {#each userLists as list}
       <List {list} />
       {/each}
     </div>
+  </div>
     {/if}
   {:else}
   <p>Please log in to view your lists.</p>

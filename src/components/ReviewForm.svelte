@@ -7,6 +7,7 @@
     export let userId = "";
     export let albumName = "";
     export let albumImageUrl = "";
+    export let artistName = "";
   
     let review = {
         title: '',
@@ -35,6 +36,7 @@
       albumId,
       userId,
       albumName,
+      artistName,
       albumImageUrl,
       title: review.title,
       content: review.content,

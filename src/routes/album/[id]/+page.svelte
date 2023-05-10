@@ -15,6 +15,7 @@
   $: album = data.album;
   $: reviews = data.reviews;
   $: genre = data.genres;
+  $: username = data.currentUsername
 
   $: averageRating =
     reviews.length > 0
@@ -113,6 +114,7 @@
     albumId={album.id}
     albumName={album.name}
     albumImageUrl={album.images[1].url}
+    artistName={album.artists[0].name}
     userId={$authStore.currentUser.uid}
     on:close={() => (showReviewForm = false)}
   />

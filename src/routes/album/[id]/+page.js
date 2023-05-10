@@ -1,5 +1,5 @@
 import { db } from "../../../lib/firebase"
-import {collection, query, where, getDocs, doc, getDoc} from "firebase/firestore"
+import {collection, query, where, getDocs} from "firebase/firestore"
 export async function load ({fetch, params}) {
   const clientAccess = "M2IyMDk4ODkxZjY4NGZkMWI3ZmNmOTg2MDQ5YTU4MTg6NTgzMThjYTlhN2E3NDI2M2E2OTU1YjlhN2I3NTRhNzg=";
 
@@ -86,6 +86,6 @@ for (const doc of querySnapshot.docs) {
         album: albumJSON,
         reviews,
         title: albumJSON.name,
-        genres: artistGenres
+        genres: artistGenres,
     }
 }
