@@ -42,6 +42,12 @@
       cover: album.images[1].url,
     };
 
+    if (list.albums && list.albums.some(a => a.id === albumData.id)) {
+      alert ("This album is already in the list!");
+      return;
+    }
+
+
     if (list.albums) {
       list.albums.push(albumData);
     } else {
@@ -112,10 +118,16 @@
       bind:value={newListDescription}
     />
     <button
-      class="bg-blue-600 text-white px-4 py-2 rounded w-full"
+      class="bg-blue-600 text-white px-4 py-2 rounded w-full mb-4"
       on:click={() => createNewList()}
     >
       Create List and Add Album
+    </button>
+    <button
+      class="bg-gray-400 text-white px-4 py-2 rounded w-full"
+      on:click={() => close()}
+    >
+      Cancel
     </button>
   </div>
 </div>
