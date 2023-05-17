@@ -5,7 +5,7 @@
   $: popularReviews = data.popularReviews;
 </script>
 
-<div class="container mx-auto px-4">
+<div class="w-full mx-auto">
   <h1 class="text-2xl font-bold mb-4">New Releases</h1>
 
   <div class="overflow-x-auto whitespace-nowrap">
@@ -41,7 +41,7 @@
           </div>
         </a>
         <div class="ml-4">
-          <h2 class="text-xl font-bold truncate"><a href="album/{review.albumId}">{review.albumName}</a></h2>
+          <h2 class="text-xl font-bold overflow-auto"><a href="album/{review.albumId}">{review.albumName}</a></h2>
           <p class="text-gray-600">{review.artistName}</p>
           <p class="mt-2">{review.content}</p>
           <div class="mt-2">
