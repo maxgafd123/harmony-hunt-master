@@ -1,4 +1,5 @@
 <script>
+  // Import CSS, Svelte onMount hook, Firebase auth object, Svelte slide transition and Svelte store for auth 
     import "../app.css";
     import {onMount} from 'svelte'
     import {auth} from '../lib/firebase'
@@ -11,19 +12,21 @@
     let loading = false;
 
     let navigatingUnsubscribe;
-
+ /*This function runs before the component is mounted on the client and
+  checks if user is already logged in*/
     export async function load({ session }) {
     if (auth.currentUser) {
       return { props: { user: auth.currentUser } };
     }
   }
+ // When the component is mounted, sets up Firebase auth state change listener and navigation state change listener
   onMount(() => {
     let unsubscribe = auth.onAuthStateChanged((user) => {
       authStore.update((curr) => {
         return { ...curr, isLoading: false, currentUser: user };
       });
     });
-
+//Subscribe to navigation events ot show/hide loading indicator
     navigatingUnsubscribe = navigating.subscribe((nav) => {
       if (nav === null) {
         loading = false;
@@ -37,7 +40,7 @@
       navigatingUnsubscribe();
     };
   });
-
+// This function handles the user logging out using Firebase's signOut method
     function handleLogout() {
       auth.signOut()
         .then(() => {
@@ -54,7 +57,7 @@
     
 </script>
 
-<!--Navigation bar, reponsive for mobile with mobileMenu-->
+<!--Main layout is a full-height flex container with columns direction, contains navbar, main content slot and footer-->
 <div class="flex flex-col min-h-screen">
 <nav class="bg-gray-800 py-4">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center">
@@ -67,9 +70,11 @@
       <div class="sm:mr-4">
         <AlbumSearch />
       </div>
+      <!--Mobile menu button only shown on small screens-->
       <div class="flex sm:hidden ml-4">
         <button class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" on:click={() => mobileMenu = !mobileMenu}>Menu</button>
       </div>
+      <!--If a user is logged in, show Log Out and My Account buttons, hidden on small screens-->
       {#if $authStore.currentUser}
       <div class="hidden sm:flex sm:items-center ml-4">
         <button class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" on:click={handleLogout}>Log Out</button>
@@ -88,12 +93,13 @@
     </div>
   </div>
 </nav>
-
+<!--If the user tries to access their account without being logged in, shows warning message -->
 {#if !$authStore.currentUser && !import.meta.env.SSR && window.location.pathname === '/privatedashboard'}
     <p>You must be logged in to access the private dashboard</p>
 {/if}
 
 <main class="flex-grow">
+  <!--If loading, shows a loading indicator in the center of the screen-->
   {#if loading}
   <div class="fixed inset-0 flex items-center justify-center">
     <LoadingIcon size="w-8" color="text-blue-500" />

@@ -3,7 +3,7 @@ import {collection, query, where, getDocs} from "firebase/firestore"
 export async function load ({fetch, params}) {
   const clientAccess = "M2IyMDk4ODkxZjY4NGZkMWI3ZmNmOTg2MDQ5YTU4MTg6NTgzMThjYTlhN2E3NDI2M2E2OTU1YjlhN2I3NTRhNzg=";
 
-      // Get an access token from Spotify
+  // Get an access token from Spotify
   const authResponse = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: {
@@ -35,6 +35,8 @@ export async function load ({fetch, params}) {
     console.log(albumJSON);
 
     const artistId = albumJSON.artists[0].id
+
+    //Fetches the artist genres from Spotify API
 
     let artistGenres = [];
 
