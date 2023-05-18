@@ -85,6 +85,10 @@
         <a href="/privatedashboard" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 ml-2 rounded-md text-sm font-medium">My Account</a>
       </div>
       {:else}
+      <div class="hidden sm:flex sm:items-center ml-4">
+        <a href="/signup" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sign Up</a>
+        <a href="/login" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 ml-2 rounded-md text-sm font-medium">Log In</a>
+      </div>
       <div class="sm:hidden flex flex-col ml-4" transition:slide="{{ duration: 300 }}" class:hidden={!mobileMenu}>
         <a href="/signup" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sign Up</a>
         <a href="/login" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 ml-2 rounded-md text-sm font-medium">Log In</a>

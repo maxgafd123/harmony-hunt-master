@@ -5,6 +5,7 @@
   import { authStore } from "../../../stores/authStore";
   import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
   import { db } from "../../../lib/firebase";
+  import { goto } from "$app/navigation"
   export let data;
 
   let showReviewForm = false;
@@ -130,13 +131,15 @@
 {/if}
 <div class="relative">
   <div class="container mx-auto px-4 py-8">
-    <div class="flex items-start justify-between mb-8">
-      <div>
+    <div class="flex flex-col md:flex-row items-center justify-center md:justify-start mb-8 text-center md:text-left">
+      <div class="mb-8 md:mb-0 md:mr-8 flex flex-col items-center md:items-start">
+        <div>
         <h1 class="text-4xl font-bold">{album.name}</h1>
         <h4 class="text-3xl font-bold">{album.artists[0].name}</h4>
         <img src={album.images[1].url} alt="Album cover" class="mt-4 mb-8" />
       </div>
-      <div class="flex flex-col justify-between">
+      </div>
+      <div class="flex flex-col items-center md:items-start">
         <div class="flex items-center mb-4 space-x-6">
           <div>
             <p class="text-lg">Number of ratings: {numberOfRatings}</p>
@@ -279,9 +282,9 @@
                 {/if}
                 <button
                   class="bg-blue-500 text-white px-4 py-2 rounded"
-                  on:click={() => toggleLikeReview(review)}
+                  on:click={() => $authStore.currentUser ? toggleLikeReview(review) : goto('/login')}
                 >
-                  {#if Object.keys(review.likes).includes($authStore.currentUser.uid)}
+                  {#if $authStore.currentUser && Object.keys(review.likes).includes($authStore.currentUser.uid)}
                     Unlike
                   {:else}
                     Like
