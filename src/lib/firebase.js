@@ -1,7 +1,7 @@
 import { deleteApp, getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from "firebase/firestore";
-
+//Firebase configuration
 const firebaseConfig = {
     apiKey: 'AIzaSyAwaHkL4Qai2wjl7jrGmQOwR_s7pGV3PoI',
     authDomain: "music-review-website.firebaseapp.com",
@@ -19,6 +19,6 @@ if (!getApps().length) {
     deleteApp(firebaseApp)
     firebaseApp = initializeApp(firebaseConfig);
 }
-
+//Export instances of auth and database
 export const auth = getAuth(firebaseApp);
 export const db = getFirestore(firebaseApp);

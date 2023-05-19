@@ -16,7 +16,7 @@
   $: album = data.album;
   $: reviews = data.reviews;
   $: genre = data.genres;
-  $: username = data.currentUsername
+  
 
   $: averageRating =
     reviews.length > 0
